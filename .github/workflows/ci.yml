@@ -1,0 +1,38 @@
+name: CI (Tests & Linting)
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Configurar o Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.14.2' # Mude para a sua versão do Python se necessário
+
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Rodar o Ruff (Lint & Format Check)
+      run: |
+        # Verifica se o código segue os padrões do Ruff
+        ruff check .
+        # Verifica se o código está formatado corretamente
+        ruff format --check .
+
+    - name: Rodar o Pytest
+      run: |
+        # Executa a sua suite de testes
+        pytest
